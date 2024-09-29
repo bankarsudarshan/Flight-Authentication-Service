@@ -2,9 +2,9 @@ const { StatusCodes } = require('http-status-codes')
 const UserService = require('../services/user-service');
 const { ErrorResponse, SuccessResponse } = require('../utils/common');
 
-async function addUser(req, res) {
+async function signUp(req, res) {
     try {
-        const response = await UserService.addUser({
+        const response = await UserService.signUpUser({
             email: req.body.email,
             password: req.body.password,
         })
@@ -21,6 +21,20 @@ async function addUser(req, res) {
     }
 }
 
+async function signIn(req, res) {
+    try {
+        const response = await UserService.signInUser(req.body.email, req.body.password);
+        console.log(response);
+        return res.send(response);
+    } catch (error) {
+        ErrorResponse.error = error;
+        return res
+                .status(StatusCodes.INTERNAL_SERVER_ERROR)
+                .json(ErrorResponse);
+    }
+}
+
 module.exports = {
-    addUser,
+    signUp,
+    signIn
 }
