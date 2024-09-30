@@ -50,7 +50,9 @@ function verifyToken(token) {
         const response = jwt.verify(token, TOKEN_SECRET);
         return response;
     } catch(error) {
-        console.log("something went wrong");
+        if(error.name == "JsonWebTokenError" || error.name == "TokenExpiredError") {
+            throw new AppError(error.message, StatusCodes.UNAUTHORIZED);
+        }
         throw error;
     }
 }
@@ -65,9 +67,25 @@ function checkPassword(plainTextPassword, hashedpassword) {
     }
 }
 
+async function isAuthenticated(token) {
+    try {
+        const response = verifyToken(token);
+        const user = await userRepository.getUser(response.id);
+        if(!user) { // user deleted their account
+            throw new AppError('No user with the corresponding token exists', StatusCodes.NOT_FOUND);
+        }
+        return user.id;
+    } catch (error) {
+        console.log(error);
+        console.log("something went wrong");
+        throw error;
+    }
+}
+
 module.exports = {
     signUpUser,
     createToken,
     verifyToken,
     signInUser,
+    isAuthenticated,
 }
