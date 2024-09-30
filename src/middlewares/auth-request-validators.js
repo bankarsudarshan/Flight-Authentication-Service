@@ -13,6 +13,18 @@ function validateAuthRequest(req, res, next) {
     next();
 }
 
+function validateIsAdminRequest(req, res, next) {
+    if(!req.body.id) {
+        ErrorResponse.message = 'Failed to validate isAdmin request';
+        ErrorResponse.error = new AppError('id not present in request', StatusCodes.BAD_REQUEST);
+        return res
+                .status(StatusCodes.BAD_REQUEST)
+                .json(ErrorResponse);
+    }
+    next();
+}
+
 module.exports = {
     validateAuthRequest,
+    validateIsAdminRequest,
 }
