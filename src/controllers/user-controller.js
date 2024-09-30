@@ -7,7 +7,7 @@ async function signUp(req, res) {
         const response = await UserService.signUpUser({
             email: req.body.email,
             password: req.body.password,
-        })
+        });
         SuccessResponse.data = response;
         SuccessResponse.message = "Successfully created a new user";
         return res
@@ -25,7 +25,11 @@ async function signIn(req, res) {
     try {
         const response = await UserService.signInUser(req.body.email, req.body.password);
         console.log(response);
-        return res.send(response);
+        SuccessResponse.data = response;
+        SuccessResponse.message = "Token created";
+        return res
+                .status(StatusCodes.OK)
+                .json(SuccessResponse);
     } catch (error) {
         ErrorResponse.error = error;
         return res

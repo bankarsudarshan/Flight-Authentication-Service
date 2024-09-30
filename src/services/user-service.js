@@ -2,6 +2,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { TOKEN_SECRET } = require('../config/serverConfig')
 const UserRepository = require('../repositories/user-repository');
+const AppError = require('../utils/appError');
+const { StatusCodes } = require('http-status-codes');
 
 const userRepository = new UserRepository();
 
@@ -23,7 +25,7 @@ async function signInUser(email, plainTextPassword) {
         const matched = checkPassword(plainTextPassword, user.password);
         if(!matched) {
             console.log('The passwords do not match');
-            throw {error: 'incorrect password'};
+            throw new AppError('incorrect password', StatusCodes.UNAUTHORIZED);
         }
         // 3 -> give them a jwt
         return createToken({email: user.email, id: user.id});
